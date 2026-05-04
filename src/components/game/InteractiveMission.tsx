@@ -13,8 +13,8 @@ const missions = [
     title: "The Single Thread Trap",
     scenario: "You have 14 ad variants across 3 campaigns. Your client wants them by noon.",
     options: [
-      { id: 'a', text: "One long chat thread", correct: false, feedback: "Incorrect. One thread leads to context bleed and manual orchestration debt.", score: 0 },
       { id: 'b', text: "Three parallel threads + brand skills", correct: true, feedback: "Correct! Parallel threads allow you to run plural operations without contamination.", score: 100 },
+      { id: 'a', text: "One long chat thread", correct: false, feedback: "Incorrect. One thread leads to context bleed and manual orchestration debt.", score: 0 },
       { id: 'c', text: "Wait for client approval on each line", correct: false, feedback: "Too slow. Agentic workflows require batching review at the end.", score: 20 }
     ]
   },
@@ -25,8 +25,8 @@ const missions = [
     scenario: "An agent starts using professional corporate speak for a playful skincare brand. How do you fix this permanently?",
     options: [
       { id: 'a', text: "Tell the agent: 'Be more playful'", correct: false, feedback: "Ephemeral. Prompts are not persistent. Use a Skill.", score: 10 },
-      { id: 'b', text: "Create a 'Brand Voice' Skill with explicit do-not-use list", correct: true, feedback: "Exactly. Skills are reusable, persistent playbooks.", score: 100 },
-      { id: 'c', text: "Edit every output manually", correct: false, feedback: "You are the bottleneck. Shift to orchestration.", score: 0 }
+      { id: 'c', text: "Edit every output manually", correct: false, feedback: "You are the bottleneck. Shift to orchestration.", score: 0 },
+      { id: 'b', text: "Create a 'Brand Voice' Skill with explicit do-not-use list", correct: true, feedback: "Exactly. Skills are reusable, persistent playbooks.", score: 100 }
     ]
   },
   {
@@ -35,9 +35,9 @@ const missions = [
     title: "The Multitasking Maze",
     scenario: "You're juggling a Nordic skincare brand, a B2B SaaS launch, and a fintech promo. How do you prevent Client A's data from bleeding into Client B's ads?",
     options: [
+      { id: 'c', text: "Clear the chat history every 10 minutes", correct: false, feedback: "Inefficient and you lose all project persistence.", score: 20 },
       { id: 'a', text: "Use one thread and be very careful", correct: false, feedback: "Human error is inevitable. Context bleed will happen.", score: 0 },
-      { id: 'b', text: "Isolated Worktrees per client", correct: true, feedback: "Correct. Worktrees provide structural isolation, making cross-contamination impossible.", score: 100 },
-      { id: 'c', text: "Clear the chat history every 10 minutes", correct: false, feedback: "Inefficient and you lose all project persistence.", score: 20 }
+      { id: 'b', text: "Isolated Worktrees per client", correct: true, feedback: "Correct. Worktrees provide structural isolation, making cross-contamination impossible.", score: 100 }
     ]
   },
   {
@@ -46,8 +46,8 @@ const missions = [
     title: "Legacy Dashboard Extraction",
     scenario: "You need data from a legacy portal with no API or export button. What's the agentic solution?",
     options: [
-      { id: 'a', text: "Manually re-type the data into a Sheet", correct: false, feedback: "This is the 'operator-as-glue' trap we're trying to avoid.", score: 0 },
       { id: 'b', text: "Use Computer Use to screenshot and OCR the GUI", correct: true, feedback: "Exactly. Agents can perceive and drive the GUI just like an intern.", score: 100 },
+      { id: 'a', text: "Manually re-type the data into a Sheet", correct: false, feedback: "This is the 'operator-as-glue' trap we're trying to avoid.", score: 0 },
       { id: 'c', text: "Ask the client to build an API", correct: false, feedback: "Unrealistic for legacy systems. Use the tools you have.", score: 10 }
     ]
   },
@@ -68,8 +68,8 @@ const missions = [
     title: "The Forgetful Agent",
     scenario: "Every Monday, you have to remind the AI that 'Revenue' is more important than 'Clicks' for your fintech client. How do you fix this?",
     options: [
-      { id: 'a', text: "Put it in every prompt", correct: false, feedback: "Prompt debt. It clutters your threads and wastes tokens.", score: 20 },
       { id: 'b', text: "Add it to the Client Memory layer", correct: true, feedback: "Yes. Memory is the cross-session truth that stays persistent.", score: 100 },
+      { id: 'a', text: "Put it in every prompt", correct: false, feedback: "Prompt debt. It clutters your threads and wastes tokens.", score: 20 },
       { id: 'c', text: "Hope the model learns eventually", correct: false, feedback: "Models don't 'learn' purely from conversation history without persistent memory.", score: 0 }
     ]
   },
@@ -79,9 +79,9 @@ const missions = [
     title: "The $50k Mistake",
     scenario: "You want an agent to optimize ad spend. What approval gate is safest?",
     options: [
-      { id: 'a', text: "Full Autopilot (spend at will)", correct: false, feedback: "Dangerous. Never give an agent the 'bank password' without a gate.", score: 0 },
+      { id: 'c', text: "Approved ranges (up to $500)", correct: false, feedback: "Better, but still risky for core brand actions without review.", score: 50 },
       { id: 'b', text: "Inform & Prepare only", correct: true, feedback: "Correct. Agents suggest; humans publish, spend, and send.", score: 100 },
-      { id: 'c', text: "Approved ranges (up to $500)", correct: false, feedback: "Better, but still risky for core brand actions without review.", score: 50 }
+      { id: 'a', text: "Full Autopilot (spend at will)", correct: false, feedback: "Dangerous. Never give an agent the 'bank password' without a gate.", score: 0 }
     ]
   },
   {
@@ -90,9 +90,9 @@ const missions = [
     title: "The 30-Day Transition",
     scenario: "What's the first thing you should do when transitioning your agency to an agentic model?",
     options: [
-      { id: 'a', text: "Replace all staff with agents", correct: false, feedback: "Disastrous. You need human taste more than ever.", score: 0 },
       { id: 'b', text: "Identify one repetitive 'Work in front of Work' task", correct: true, feedback: "Correct. Start small, build trust with one reliable automation.", score: 100 },
-      { id: 'c', text: "Spend $10k on training courses", correct: false, feedback: "Action beats theory. Build a skill instead.", score: 20 }
+      { id: 'c', text: "Spend $10k on training courses", correct: false, feedback: "Action beats theory. Build a skill instead.", score: 20 },
+      { id: 'a', text: "Replace all staff with agents", correct: false, feedback: "Disastrous. You need human taste more than ever.", score: 0 }
     ]
   }
 ];
