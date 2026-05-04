@@ -23,9 +23,9 @@ type AutomationTask = {
 };
 
 const INITIAL_TASKS: AutomationTask[] = [
-  { id: 'waste', name: 'Ad Waste Monitor', description: 'Sistema nebeatpažįsta neefektyvių raktažodžių.', correctSkill: 'Vartotojų elgsenos analizė' },
-  { id: 'competitor', name: 'Competitor Scraper', description: 'Konkurentų kainų stebėjimas užstrigo ties saugumo patikra.', correctSkill: 'Naršyklės valdymas' },
-  { id: 'leads', name: 'Lead Scrubber', description: 'Nauji kontaktai nefiltruojami pagal kokybės kriterijus.', correctSkill: 'Semantinė analizė' },
+  { id: 'waste', name: 'Ad Waste Monitor', status: 'broken', description: 'Sistema nebeatpažįsta neefektyvių raktažodžių.', correctSkill: 'Vartotojų elgsenos analizė' },
+  { id: 'competitor', name: 'Competitor Scraper', status: 'broken', description: 'Konkurentų kainų stebėjimas užstrigo ties saugumo patikra.', correctSkill: 'Naršyklės valdymas' },
+  { id: 'leads', name: 'Lead Scrubber', status: 'broken', description: 'Nauji kontaktai nefiltruojami pagal kokybės kriterijus.', correctSkill: 'Semantinė analizė' },
 ];
 
 const SKILLS = ['Vartotojų elgsenos analizė', 'Naršyklės valdymas', 'Semantinė analizė', 'Vaizdų atpažinimas', 'Vektorinė paieška'];
