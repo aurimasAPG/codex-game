@@ -36,7 +36,7 @@ const DEFAULT_AUTOMATIONS: Automation[] = [
   { id: '4', name: 'Anomaly Thread Trigger', trigger: 'Event: CPA > 25%', lastRun: 'Yesterday', status: 'error', impact: 'Risk Mitigation' },
 ];
 
-export function AutomationSimulator() {
+export function AutomationSimulator({ onComplete }: { onComplete?: () => void }) {
   const { addXp } = useGame();
   const [automations, setAutomations] = useState<Automation[]>(DEFAULT_AUTOMATIONS);
   const [logs, setLogs] = useState<string[]>(['[SYSTEM] Core orchestration engines online...', '[IDLE] Waiting for scheduled triggers...']);

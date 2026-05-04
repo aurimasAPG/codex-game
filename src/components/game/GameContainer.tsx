@@ -4,11 +4,26 @@ import { useGame } from '@/context/GameContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Terminal, Layers, BookOpen, Zap, MousePointer2, Globe, Brain, Users, ShieldCheck, Calendar, ArrowRight, Play, CheckCircle2, X } from 'lucide-react';
-import { scenarios, modules } from '@/data/content';
+import { InteractiveMission } from './InteractiveMission';
+import { AgencyControlRoom } from './AgencyControlRoom';
+import { AutomationSimulator } from './AutomationSimulator';
 
 const iconMap: Record<string, any> = {
   Terminal, Layers, BookOpen, Zap, MousePointer2, Globe, Brain, Users, ShieldCheck, Calendar
 };
+
+const modules = [
+  { id: 'intro', icon: 'Terminal', title: 'Why Chat Isn’t Enough', description: 'Learn why the single-thread model of ChatGPT hits a ceiling.' },
+  { id: 'threads', icon: 'Layers', title: 'Parallel Threads', description: 'Master running multiple campaign operations simultaneously.' },
+  { id: 'skills', icon: 'BookOpen', title: 'Skills & Playbooks', description: 'Turn prompts into scalable, executable agency skills.' },
+  { id: 'automations', icon: 'Zap', title: 'Automations', description: 'Set up the 5 core always-on marketing automations.' },
+  { id: 'computer-use', icon: 'MousePointer2', title: 'Computer Use', description: 'When the agent takes the wheel of your browser.' },
+  { id: 'intelligence', icon: 'Globe', title: 'Intelligence & Research', description: 'Connecting agents to the live web and stack.' },
+  { id: 'memory', icon: 'Brain', title: 'Memory Layer', description: 'Ensure agents never forget a client choice.' },
+  { id: 'orchestration', icon: 'Users', title: 'Orchestration', description: 'Coordinating specialists for complex projects.' },
+  { id: 'governance', icon: 'ShieldCheck', title: 'Governance', description: 'Scaling with safety: knowing when to approve.' },
+  { id: 'plan', icon: 'Calendar', title: '30-Day Plan', description: 'Your final roadmap to an agentic marketing model.' }
+];
 
 export default function GameContainer() {
   const { state, setAgencyStatus, setCurrentModule, completeModule } = useGame();
@@ -83,66 +98,14 @@ export default function GameContainer() {
   );
 }
 
-function OpeningScenario() {
-  const { setAgencyStatus } = useGame();
-  const scenario = scenarios.monday_morning;
-
-  return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-2xl w-full"
-      >
-        <div className="border border-slate-800 bg-slate-900/50 p-8 rounded-2xl backdrop-blur-sm">
-          <div className="flex gap-2 mb-6">
-            <div className="w-3 h-3 rounded-full bg-red-500/50" />
-            <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
-            <div className="w-3 h-3 rounded-full bg-green-500/50" />
-          </div>
-          
-          <h2 className="text-3xl font-bold text-white mb-4 tracking-tight">{scenario.title}</h2>
-          <div className="space-y-4 text-slate-400 leading-relaxed mb-8">
-            <p>{scenario.description}</p>
-            <p className="text-slate-500 italic border-l-2 border-slate-700 pl-4 py-1">
-              "Chat-based work is single-thread. The work you have is plural, persistent, and parallel."
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {scenario.choices.map((choice) => (
-              <button
-                key={choice.id}
-                onClick={() => setAgencyStatus('agentic')}
-                className={cn(
-                  "p-4 rounded-xl border text-left transition-all group",
-                  choice.isAgentic 
-                    ? "border-cyan-500/30 bg-cyan-500/5 hover:bg-cyan-500/10 hover:border-cyan-400" 
-                    : "border-slate-700 bg-slate-800/30 hover:bg-slate-800/50"
-                )}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className={cn("text-xs font-bold uppercase tracking-wider", choice.isAgentic ? "text-cyan-400" : "text-slate-500")}>
-                    {choice.isAgentic ? "The Agentic Shift" : "Status Quo"}
-                  </span>
-                  {choice.isAgentic ? <Zap className="w-4 h-4 text-cyan-400" /> : <Play className="w-4 h-4 text-slate-500" />}
-                </div>
-                <p className="font-bold text-slate-200 group-hover:text-white transition-colors">{choice.text}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
-import { InteractiveMission } from './InteractiveMission';
-import { AgencyControlRoom } from './AgencyControlRoom';
-
 function ModuleLoader({ moduleId }: { moduleId: string }) {
   const { setCurrentModule, completeModule } = useGame();
   
+  const handleComplete = (score: number = 100) => {
+    completeModule(moduleId, score);
+    setCurrentModule(null);
+  };
+
   return (
     <div className="bg-slate-900 rounded-2xl border border-slate-800 p-8 min-h-[500px] flex flex-col items-center justify-center text-center">
       <div className="w-full flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
@@ -152,45 +115,45 @@ function ModuleLoader({ moduleId }: { moduleId: string }) {
         </button>
       </div>
 
-      {moduleId === 'intro' || moduleId === 'skills' ? (
-        <InteractiveMission 
-          moduleId={moduleId} 
-          onComplete={(score) => {
-            completeModule(moduleId, score);
-            setCurrentModule(null);
-          }} 
-        />
-      ) : moduleId === 'orchestration' ? (
+      {moduleId === 'orchestration' ? (
         <div className="w-full space-y-8">
           <AgencyControlRoom />
-          <button 
-            onClick={() => {
-              completeModule(moduleId, 100);
-              setCurrentModule(null);
-            }}
-            className="px-8 py-3 bg-cyan-500 text-black font-bold rounded-xl hover:bg-cyan-400"
-          >
+          <button onClick={() => handleComplete()} className="px-8 py-3 bg-cyan-500 text-black font-bold rounded-xl hover:bg-cyan-400">
             END SIMULATION
           </button>
         </div>
-      ) : (
-        <div className="flex flex-col items-center">
-          <p className="text-slate-400 mb-8 max-w-lg">
-            This mission is being initialized using insights from "The Codex Marketer".
-            You will learn how to apply agentic principles to real-world marketing operations.
-          </p>
-          <button 
-            onClick={() => {
-              completeModule(moduleId, 100);
-              setCurrentModule(null);
-            }}
-            className="px-6 py-2 bg-cyan-500 text-black font-bold rounded-lg hover:bg-cyan-400 transition-colors"
-          >
-            COMPLETE MOCK MISSION
-          </button>
+      ) : moduleId === 'automations' ? (
+        <div className="w-full">
+          <AutomationSimulator onComplete={() => handleComplete()} />
         </div>
+      ) : (
+        <InteractiveMission 
+          moduleId={moduleId} 
+          onComplete={(score) => handleComplete(score)} 
+        />
       )}
     </div>
   );
 }
 
+function OpeningScenario() {
+  const { setAgencyStatus } = useGame();
+  return (
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
+      <div className="max-w-2xl w-full border border-slate-800 bg-slate-900/50 p-8 rounded-2xl">
+        <h2 className="text-3xl font-bold text-white mb-4">Monday Morning: 47 Tabs Open</h2>
+        <p className="text-slate-400 mb-8">Your coffee is cooling. You have GA4, Meta, and Search Console open. Reports are due by noon. Do you keep grinding or shift to orchestration?</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <button onClick={() => setAgencyStatus('agentic')} className="p-4 rounded-xl border border-cyan-500/30 bg-cyan-500/5 hover:bg-cyan-500/10 text-left">
+            <span className="text-xs font-bold text-cyan-400 block mb-1 uppercase">The Agentic Shift</span>
+            <p className="font-bold text-slate-200">Start Orchestrating Agents</p>
+          </button>
+          <button className="p-4 rounded-xl border border-slate-700 bg-slate-800/30 opacity-50 text-left cursor-not-allowed">
+            <span className="text-xs font-bold text-slate-500 block mb-1 uppercase">Status Quo</span>
+            <p className="font-bold text-slate-400">Manual Copy-Paste</p>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
