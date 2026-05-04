@@ -1,14 +1,33 @@
 'use client';
 
+import { useState } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { Terminal, Layers, BookOpen, Zap, MousePointer2, Globe, Brain, Users, ShieldCheck, Calendar, ArrowRight, Play, CheckCircle2, X } from 'lucide-react';
+import {
+  Terminal,
+  Layers,
+  BookOpen,
+  Zap,
+  MousePointer2,
+  Globe,
+  Brain,
+  Users,
+  ShieldCheck,
+  Calendar,
+  ArrowRight,
+  CheckCircle2,
+  X,
+  Flame,
+  Trophy,
+  RotateCcw,
+} from 'lucide-react';
 import { InteractiveMission } from './InteractiveMission';
 import { AgencyControlRoom } from './AgencyControlRoom';
 import { AutomationSimulator } from './AutomationSimulator';
+import { Achievements } from './Achievements';
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Terminal, Layers, BookOpen, Zap, MousePointer2, Globe, Brain, Users, ShieldCheck, Calendar
 };
 
@@ -26,7 +45,17 @@ const modules = [
 ];
 
 export default function GameContainer() {
-  const { state, setAgencyStatus, setCurrentModule, completeModule } = useGame();
+  const { state, hydrated, setCurrentModule, resetProgress } = useGame();
+  const [achievementsOpen, setAchievementsOpen] = useState(false);
+  const [resetOpen, setResetOpen] = useState(false);
+
+  if (!hydrated) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-600 flex items-center justify-center font-mono text-xs uppercase tracking-widest">
+        Booting agentic fleet…
+      </div>
+    );
+  }
 
   if (state.agencyStatus === 'chat_based' && !state.currentModule) {
     return <OpeningScenario />;
@@ -34,24 +63,41 @@ export default function GameContainer() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-50 p-6 font-mono">
-      <header className="max-w-6xl mx-auto flex justify-between items-center mb-12 border-b border-slate-800 pb-6">
-        <div>
+      <header className="max-w-6xl mx-auto flex justify-between items-center mb-12 border-b border-slate-800 pb-6 gap-4">
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold tracking-tighter text-cyan-400">AGENTIC MARKETING ACADEMY</h1>
           <p className="text-xs text-slate-500 uppercase tracking-widest mt-1">Status: {state.agencyStatus.replace('_', ' ')} Operation</p>
         </div>
-        <div className="flex gap-8 items-center">
-          <div className="text-right">
+        <div className="flex gap-6 items-center">
+          <StreakIndicator streak={state.streak} />
+          <div className="text-right hidden sm:block">
             <p className="text-[10px] text-slate-500 uppercase">Level {state.level}</p>
             <div className="w-32 h-1.5 bg-slate-800 rounded-full mt-1 overflow-hidden">
-              <div 
-                className="h-full bg-cyan-500 transition-all duration-500" 
+              <div
+                className="h-full bg-cyan-500 transition-all duration-500"
                 style={{ width: `${(state.xp % 1000) / 10}%` }}
               />
             </div>
           </div>
-          <div>
+          <div className="hidden sm:block">
             <p className="text-[10px] text-slate-500 uppercase">XP</p>
             <p className="text-sm font-bold text-cyan-400">{state.xp.toLocaleString()}</p>
+          </div>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setAchievementsOpen(true)}
+              title="Achievements"
+              className="p-2 rounded-lg border border-slate-800 hover:border-yellow-500/40 hover:bg-yellow-500/5 transition-colors"
+            >
+              <Trophy className="w-4 h-4 text-yellow-400" />
+            </button>
+            <button
+              onClick={() => setResetOpen(true)}
+              title="Reset progress"
+              className="p-2 rounded-lg border border-slate-800 hover:border-red-500/40 hover:bg-red-500/5 transition-colors"
+            >
+              <RotateCcw className="w-4 h-4 text-slate-400" />
+            </button>
           </div>
         </div>
       </header>
@@ -63,7 +109,7 @@ export default function GameContainer() {
               const Icon = iconMap[module.icon];
               const isCompleted = state.completedModules.includes(module.id);
               const isUnlocked = i === 0 || state.completedModules.includes(modules[i-1].id);
-              
+
               return (
                 <motion.div
                   key={module.id}
@@ -84,7 +130,7 @@ export default function GameContainer() {
                   <h3 className="font-bold text-lg mb-2">{module.title}</h3>
                   <p className="text-sm text-slate-400 leading-relaxed">{module.description}</p>
                   <div className="mt-4 flex items-center text-xs font-bold text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                    START MISSION <ArrowRight className="w-3 h-3 ml-1" />
+                    {isCompleted ? 'REPLAY MISSION' : 'START MISSION'} <ArrowRight className="w-3 h-3 ml-1" />
                   </div>
                 </motion.div>
               );
@@ -94,23 +140,39 @@ export default function GameContainer() {
           <ModuleLoader moduleId={state.currentModule} />
         )}
       </main>
+
+      <Achievements open={achievementsOpen} onClose={() => setAchievementsOpen(false)} />
+      <ResetConfirm open={resetOpen} onCancel={() => setResetOpen(false)} onConfirm={() => { resetProgress(); setResetOpen(false); }} />
     </div>
+  );
+}
+
+function StreakIndicator({ streak }: { streak: number }) {
+  if (streak <= 0) return null;
+  const intensity = streak >= 10 ? 'text-fuchsia-400' : streak >= 5 ? 'text-orange-400' : streak >= 3 ? 'text-amber-400' : 'text-slate-400';
+  return (
+    <motion.div
+      key={streak}
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      className={cn('flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-800 bg-slate-900/60', intensity)}
+      title={`${streak}-answer streak`}
+    >
+      <Flame className="w-4 h-4" />
+      <span className="text-xs font-bold font-mono">{streak}×</span>
+    </motion.div>
   );
 }
 
 function ModuleLoader({ moduleId }: { moduleId: string }) {
   const { setCurrentModule, completeModule } = useGame();
-  
-  const handleComplete = (score: number = 100) => {
-    completeModule(moduleId, score);
-    setCurrentModule(null);
-  };
+  const close = () => setCurrentModule(null);
 
   return (
     <div className="bg-slate-900 rounded-2xl border border-slate-800 p-8 min-h-[500px] flex flex-col items-center justify-center text-center">
       <div className="w-full flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
         <h2 className="text-sm font-bold text-slate-500 uppercase tracking-[0.2em]">MISSION: {moduleId.replace('-', ' ')}</h2>
-        <button onClick={() => setCurrentModule(null)} className="p-2 hover:bg-slate-800 rounded-full transition-colors">
+        <button onClick={close} className="p-2 hover:bg-slate-800 rounded-full transition-colors">
           <X className="w-5 h-5 text-slate-500" />
         </button>
       </div>
@@ -118,21 +180,66 @@ function ModuleLoader({ moduleId }: { moduleId: string }) {
       {moduleId === 'orchestration' ? (
         <div className="w-full space-y-8">
           <AgencyControlRoom />
-          <button onClick={() => handleComplete()} className="px-8 py-3 bg-cyan-500 text-black font-bold rounded-xl hover:bg-cyan-400">
+          <button
+            onClick={() => { completeModule(moduleId, 100); close(); }}
+            className="px-8 py-3 bg-cyan-500 text-black font-bold rounded-xl hover:bg-cyan-400"
+          >
             END SIMULATION
           </button>
         </div>
       ) : moduleId === 'automations' ? (
         <div className="w-full">
-          <AutomationSimulator onComplete={() => handleComplete()} />
+          <AutomationSimulator onComplete={() => { completeModule(moduleId, 100); close(); }} />
         </div>
       ) : (
-        <InteractiveMission 
-          moduleId={moduleId} 
-          onComplete={(score) => handleComplete(score)} 
+        <InteractiveMission
+          moduleId={moduleId}
+          onComplete={close}
         />
       )}
     </div>
+  );
+}
+
+function ResetConfirm({ open, onCancel, onConfirm }: { open: boolean; onCancel: () => void; onConfirm: () => void }) {
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={onCancel}
+        >
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-slate-950 border border-red-500/30 rounded-2xl p-6 w-full max-w-md"
+          >
+            <h2 className="text-lg font-bold text-white mb-2">Wipe agentic fleet?</h2>
+            <p className="text-sm text-slate-400 mb-6">
+              This clears your XP, streaks, badges, and module progress. The action can&apos;t be undone.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={onCancel}
+                className="px-4 py-2 text-xs font-bold text-slate-300 hover:bg-slate-800 rounded-lg transition-colors"
+              >
+                CANCEL
+              </button>
+              <button
+                onClick={onConfirm}
+                className="px-4 py-2 bg-red-500 text-black text-xs font-bold rounded-lg hover:bg-red-400 transition-colors"
+              >
+                RESET PROGRESS
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 

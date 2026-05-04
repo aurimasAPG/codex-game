@@ -1,9 +1,9 @@
 'use client';
 
-import { useGame } from '@/context/GameContext';
+import { useGame, type MissionResult } from '@/context/GameContext';
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { ShieldCheck, Zap, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Flame, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const missions = [
@@ -98,13 +98,21 @@ const missions = [
 ];
 
 export function InteractiveMission({ moduleId, onComplete }: { moduleId: string, onComplete: (score: number) => void }) {
+  const { submitMissionAnswer } = useGame();
   const mission = missions.find(m => m.moduleId === moduleId);
   const [selected, setSelected] = useState<string | null>(null);
-  const [showFeedback, setShowFeedback] = useState(false);
+  const [result, setResult] = useState<MissionResult | null>(null);
 
   if (!mission) return <div className="text-slate-500">Mission content coming soon...</div>;
 
   const currentOption = mission.options.find(o => o.id === selected);
+  const showFeedback = result !== null;
+
+  const handleSubmit = () => {
+    if (!currentOption) return;
+    const r = submitMissionAnswer(moduleId, currentOption.score);
+    setResult(r);
+  };
 
   return (
     <div className="max-w-xl w-full mx-auto text-left">
@@ -119,7 +127,7 @@ export function InteractiveMission({ moduleId, onComplete }: { moduleId: string,
             onClick={() => setSelected(option.id)}
             className={cn(
               "w-full p-4 rounded-xl border text-left transition-all",
-              selected === option.id 
+              selected === option.id
                 ? (showFeedback ? (option.correct ? "border-green-500 bg-green-500/10" : "border-red-500 bg-red-500/10") : "border-cyan-500 bg-cyan-500/10")
                 : "border-slate-800 bg-slate-900/50 hover:bg-slate-800"
             )}
@@ -132,7 +140,7 @@ export function InteractiveMission({ moduleId, onComplete }: { moduleId: string,
       {!showFeedback ? (
         <button
           disabled={!selected}
-          onClick={() => setShowFeedback(true)}
+          onClick={handleSubmit}
           className="w-full py-3 bg-cyan-500 text-black font-bold rounded-xl disabled:opacity-50"
         >
           SUBMIT DECISION
@@ -145,6 +153,9 @@ export function InteractiveMission({ moduleId, onComplete }: { moduleId: string,
             </p>
             <p className="text-sm text-slate-300">{currentOption?.feedback}</p>
           </div>
+
+          <XpBreakdown result={result} />
+
           <button
             onClick={() => onComplete(currentOption?.score || 0)}
             className="w-full py-3 border border-slate-700 text-white font-bold rounded-xl hover:bg-slate-800"
@@ -152,6 +163,60 @@ export function InteractiveMission({ moduleId, onComplete }: { moduleId: string,
             CONTINUE
           </button>
         </motion.div>
+      )}
+    </div>
+  );
+}
+
+function XpBreakdown({ result }: { result: MissionResult }) {
+  const completionBonus = 500;
+  const total = result.totalXp + completionBonus;
+
+  return (
+    <div className="rounded-xl border border-slate-800 bg-slate-950/50 p-4 space-y-3">
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-slate-400 uppercase tracking-widest">Mission XP</span>
+        <span className="font-mono text-slate-200">+{result.baseXp}</span>
+      </div>
+
+      <AnimatePresence>
+        {result.isCombo && (
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="flex items-center justify-between text-xs"
+          >
+            <span className="text-orange-300 uppercase tracking-widest flex items-center gap-1.5">
+              <Flame className="w-3.5 h-3.5" />
+              {result.newStreak}× Combo · {result.multiplier}× multiplier
+            </span>
+            <span className="font-mono text-orange-300">+{result.bonusXp}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-slate-400 uppercase tracking-widest">Completion</span>
+        <span className="font-mono text-slate-200">+{completionBonus}</span>
+      </div>
+
+      <div className="border-t border-slate-800 pt-3 flex items-center justify-between">
+        <span className="text-xs text-cyan-300 uppercase tracking-widest flex items-center gap-1.5">
+          <Sparkles className="w-3.5 h-3.5" /> Total awarded
+        </span>
+        <span className="font-mono text-cyan-300 font-bold">+{total} XP</span>
+      </div>
+
+      {!result.isCombo && result.newStreak > 0 && result.newStreak < 3 && (
+        <p className="text-[11px] text-slate-500 italic">
+          {3 - result.newStreak} more in a row to trigger a 1.5× combo.
+        </p>
+      )}
+      {result.newStreak === 0 && (
+        <p className="text-[11px] text-slate-500 italic">
+          Streak reset. Get the next answer right to start a new combo.
+        </p>
       )}
     </div>
   );
