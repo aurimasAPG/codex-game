@@ -164,39 +164,61 @@ function StreakIndicator({ streak }: { streak: number }) {
   );
 }
 
+import { PrizeEntry } from './PrizeEntry';
+
 function ModuleLoader({ moduleId }: { moduleId: string }) {
-  const { setCurrentModule, completeModule } = useGame();
+  const { state, setCurrentModule, completeModule } = useGame();
   const close = () => setCurrentModule(null);
 
+  const isFinalStep = moduleId === 'plan';
+  const showPrizeEntry = isFinalStep && state.completedModules.includes('plan');
+
   return (
-    <div className="bg-slate-900 rounded-2xl border border-slate-800 p-8 min-h-[500px] flex flex-col items-center justify-center text-center">
-      <div className="w-full flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
-        <h2 className="text-sm font-bold text-slate-500 uppercase tracking-[0.2em]">MISSION: {moduleId.replace('-', ' ')}</h2>
+    <div className="bg-slate-900 rounded-2xl border border-slate-800 p-8 min-h-[500px] flex flex-col items-center justify-center text-center relative overflow-hidden">
+      {isFinalStep && (
+        <div className="absolute inset-0 bg-gradient-to-t from-cyan-500/5 to-transparent pointer-events-none" />
+      )}
+      
+      <div className="w-full flex justify-between items-center mb-8 border-b border-slate-800 pb-4 relative z-10">
+        <h2 className="text-sm font-bold text-slate-500 uppercase tracking-[0.2em]">
+          {showPrizeEntry ? 'MISSION ACCOMPLISHED' : `MISSION: ${moduleId.replace('-', ' ')}`}
+        </h2>
         <button onClick={close} className="p-2 hover:bg-slate-800 rounded-full transition-colors">
           <X className="w-5 h-5 text-slate-500" />
         </button>
       </div>
 
-      {moduleId === 'orchestration' ? (
-        <div className="w-full space-y-8">
-          <AgencyControlRoom />
-          <button
-            onClick={() => { completeModule(moduleId, 100); close(); }}
-            className="px-8 py-3 bg-cyan-500 text-black font-bold rounded-xl hover:bg-cyan-400"
-          >
-            END SIMULATION
-          </button>
-        </div>
-      ) : moduleId === 'automations' ? (
-        <div className="w-full">
-          <AutomationSimulator onComplete={() => { completeModule(moduleId, 100); close(); }} />
-        </div>
-      ) : (
-        <InteractiveMission
-          moduleId={moduleId}
-          onComplete={close}
-        />
-      )}
+      <div className="w-full relative z-10">
+        {showPrizeEntry ? (
+          <PrizeEntry />
+        ) : moduleId === 'orchestration' ? (
+          <div className="w-full space-y-8">
+            <AgencyControlRoom />
+            <button
+              onClick={() => { completeModule(moduleId, 100); close(); }}
+              className="px-8 py-3 bg-cyan-500 text-black font-bold rounded-xl hover:bg-cyan-400"
+            >
+              END SIMULATION
+            </button>
+          </div>
+        ) : moduleId === 'automations' ? (
+          <div className="w-full">
+            <AutomationSimulator onComplete={() => { completeModule(moduleId, 100); close(); }} />
+          </div>
+        ) : (
+          <InteractiveMission
+            moduleId={moduleId}
+            onComplete={() => {
+              if (isFinalStep) {
+                // For the final plan, completeModule but don't close, effectively staying in the loader to switch to PrizeEntry
+                completeModule(moduleId, 100);
+              } else {
+                close();
+              }
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 }
