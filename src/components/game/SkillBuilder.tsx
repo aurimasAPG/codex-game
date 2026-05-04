@@ -6,12 +6,10 @@ import {
   Wrench, 
   Plus, 
   Play, 
-  Trash2, 
   Save, 
   Code2, 
   AlignLeft, 
   Sparkles,
-  ChevronRight,
   Info
 } from 'lucide-react';
 import { cn } from '@/lib/utils';

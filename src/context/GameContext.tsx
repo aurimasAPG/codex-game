@@ -87,11 +87,17 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setState(mergeState(JSON.parse(raw)));
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const merged = mergeState(parsed);
+        setTimeout(() => {
+          setState((prev) => ({ ...prev, ...merged }));
+        }, 0);
+      }
     } catch {
       // ignore corrupt storage
     }
-    setHydrated(true);
+    setTimeout(() => setHydrated(true), 0);
   }, []);
 
   useEffect(() => {
@@ -109,10 +115,16 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     const earned = ACHIEVEMENTS.filter((a) => a.isUnlocked(state)).map((a) => a.id);
     const missing = earned.filter((id) => !state.badges.includes(id));
     if (missing.length > 0) {
-      setState((prev) => ({
-        ...prev,
-        badges: [...prev.badges, ...missing.filter((id) => !prev.badges.includes(id))],
-      }));
+      setTimeout(() => {
+        setState((prev) => {
+          const stillMissing = earned.filter((id) => !prev.badges.includes(id));
+          if (stillMissing.length === 0) return prev;
+          return {
+            ...prev,
+            badges: [...prev.badges, ...stillMissing],
+          };
+        });
+      }, 0);
     }
   }, [state, hydrated]);
 

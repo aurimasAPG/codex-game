@@ -1,9 +1,8 @@
 'use client';
 
-import { useGame } from '@/context/GameContext';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Layers, Activity, CheckCircle2, Clock, Pause, Zap } from 'lucide-react';
+import { Layers, Activity, Clock, Pause, Zap } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
