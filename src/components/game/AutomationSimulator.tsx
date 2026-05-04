@@ -23,12 +23,12 @@ type AutomationTask = {
 };
 
 const INITIAL_TASKS: AutomationTask[] = [
-  { id: 'waste', name: 'Ad Waste Monitor', status: 'broken', description: 'Sistema nebeatpažįsta neefektyvių raktažodžių.', correctSkill: 'Vartotojų elgsenos analizė' },
-  { id: 'competitor', name: 'Competitor Scraper', status: 'broken', description: 'Konkurentų kainų stebėjimas užstrigo ties saugumo patikra.', correctSkill: 'Naršyklės valdymas' },
-  { id: 'leads', name: 'Lead Scrubber', status: 'broken', description: 'Nauji kontaktai nefiltruojami pagal kokybės kriterijus.', correctSkill: 'Semantinė analizė' },
+  { id: 'waste', name: 'Ad Waste Monitor', status: 'broken', description: 'System no longer recognizes inefficient keywords.', correctSkill: 'User Behavior Analysis' },
+  { id: 'competitor', name: 'Competitor Scraper', status: 'broken', description: 'Competitor price monitoring is stuck on a security check.', correctSkill: 'Browser Operation' },
+  { id: 'leads', name: 'Lead Scrubber', status: 'broken', description: 'New contacts are not being filtered by quality criteria.', correctSkill: 'Semantic Analysis' },
 ];
 
-const SKILLS = ['Vartotojų elgsenos analizė', 'Naršyklės valdymas', 'Semantinė analizė', 'Vaizdų atpažinimas', 'Vektorinė paieška'];
+const SKILLS = ['User Behavior Analysis', 'Browser Operation', 'Semantic Analysis', 'Image Recognition', 'Vector Search'];
 
 export function AutomationSimulator({ onComplete }: { onComplete?: () => void }) {
   const { addXp } = useGame();
@@ -48,7 +48,6 @@ export function AutomationSimulator({ onComplete }: { onComplete?: () => void })
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8 p-6 bg-slate-900/50 border border-slate-800 rounded-3xl backdrop-blur-md relative overflow-hidden">
-      {/* Decorative background pulse */}
       {!allFixed && (
         <div className="absolute inset-0 bg-red-500/5 animate-pulse pointer-events-none" />
       )}
@@ -56,12 +55,12 @@ export function AutomationSimulator({ onComplete }: { onComplete?: () => void })
       <div className="text-center space-y-4 relative z-10">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-full">
           <ShieldAlert className="w-4 h-4 text-red-500" />
-          <span className="text-[10px] font-black text-red-500 uppercase tracking-widest">AVARINĖ BŪSENA: AGENTAI NEVEIKIA</span>
+          <span className="text-[10px] font-black text-red-500 uppercase tracking-widest">CRITICAL STATE: AGENTS OFFLINE</span>
         </div>
-        <h2 className="text-3xl font-bold text-white uppercase tracking-tighter">SUSTABDYKITE ŽLUGIMĄ</h2>
+        <h2 className="text-3xl font-bold text-white uppercase tracking-tighter">STOP THE COLLAPSE</h2>
         <div className="flex items-center justify-center gap-2 text-slate-400">
           <HandMetal className="w-4 h-4 text-cyan-400" />
-          <p className="text-sm">Spustelėkite ant sugedusios sistemos ir parinkite jai įrankį.</p>
+          <p className="text-sm">Click on a broken system and select the correct skill to fix it.</p>
         </div>
       </div>
 
@@ -88,7 +87,7 @@ export function AutomationSimulator({ onComplete }: { onComplete?: () => void })
             
             <h3 className="font-bold text-xl text-white mb-2">{task.name}</h3>
             <p className="text-xs text-slate-400 leading-relaxed mb-6">
-              {task.status === 'fixed' ? 'Sistema sėkmingai stabilizuota ir veikia optimaliu režimu.' : task.description}
+              {task.status === 'fixed' ? 'System successfully stabilized and running optimally.' : task.description}
             </p>
 
             {task.status === 'broken' && (
@@ -96,13 +95,13 @@ export function AutomationSimulator({ onComplete }: { onComplete?: () => void })
                 onClick={() => setSelectedTask(task.id)}
                 className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-cyan-400 text-[10px] font-black uppercase tracking-widest rounded-lg border border-slate-700 flex items-center justify-center gap-2"
               >
-                <Settings className="w-3 h-3" /> taisyti dabar
+                <Settings className="w-3 h-3" /> repair now
               </button>
             )}
             
             {task.status === 'fixed' && (
               <div className="text-[10px] font-black text-green-500 uppercase tracking-widest flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3" /> veikia
+                <CheckCircle2 className="w-3 h-3" /> operational
               </div>
             )}
           </motion.div>
@@ -122,9 +121,9 @@ export function AutomationSimulator({ onComplete }: { onComplete?: () => void })
               onClick={e => e.stopPropagation()}
               className="bg-slate-950 border border-slate-800 p-8 rounded-3xl max-w-md w-full shadow-2xl"
             >
-              <h4 className="text-sm font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">SISTEMOS REMONTAS</h4>
+              <h4 className="text-sm font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">SYSTEM REPAIR</h4>
               <h3 className="text-2xl font-bold text-white mb-1">{tasks.find(t => t.id === selectedTask)?.name}</h3>
-              <p className="text-sm text-slate-400 mb-8">Parinkite tinkamą „Skill“ algoritmą klaidos eliminavimui:</p>
+              <p className="text-sm text-slate-400 mb-8">Select the appropriate skill algorithm to eliminate the error:</p>
               
               <div className="grid gap-3">
                 {SKILLS.map((skill) => (
@@ -143,7 +142,7 @@ export function AutomationSimulator({ onComplete }: { onComplete?: () => void })
                 onClick={() => setSelectedTask(null)}
                 className="w-full mt-6 py-2 text-xs text-slate-600 hover:text-slate-400 font-bold uppercase"
               >
-                atšaukti
+                cancel
               </button>
             </motion.div>
           </motion.div>
@@ -161,7 +160,7 @@ export function AutomationSimulator({ onComplete }: { onComplete?: () => void })
               className="w-full py-5 bg-cyan-500 text-black font-black uppercase tracking-tighter rounded-2xl hover:bg-cyan-400 hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_40px_rgba(6,182,212,0.4)] transition-all flex items-center justify-center gap-3 text-lg"
               onClick={onComplete}
             >
-              <Zap className="w-6 h-6 fill-current" /> STABILIZUOTI SISTEMĄ IR TĘSTI
+              <Zap className="w-6 h-6 fill-current" /> STABILIZE SYSTEM AND CONTINUE
             </button>
           </motion.div>
         )}
