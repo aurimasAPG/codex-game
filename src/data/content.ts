@@ -72,6 +72,42 @@ export const modules = [
 ];
 
 export const scenarios = {
+  intelligence: {
+    title: "The Intelligence Sweep",
+    description: "Competitor A just changed their pricing. Competitor B launched 3 new ad variants on LinkedIn.",
+    choices: [
+      {
+        id: 'manual_research',
+        text: "Open tabs and start research",
+        outcome: "You spend 2 hours documenting changes. By the time you're done, the morning meeting is over.",
+        isAgentic: false,
+      },
+      {
+        id: 'agentic_sweep',
+        text: "Trigger 'Intelligence Sweep' Skill",
+        outcome: "Your agent uses the in-app browser to scrape changes, summarizes the delta, and drafts a one-page comparison while you drink coffee.",
+        isAgentic: true,
+      }
+    ]
+  },
+  skill_library: {
+    title: "The Junior Onboarding",
+    description: "A new junior joined. They need to write 10 ad variants for the skincare client in 'The Nordic Voice'.",
+    choices: [
+      {
+        id: 'feedback_loop',
+        text: "Let them draft, then review everything",
+        outcome: "You spend 3 hours giving feedback. They are slow to learn the voice. The client is waiting.",
+        isAgentic: false,
+      },
+      {
+        id: 'deploy_skill',
+        text: "Give them the 'Nordic Voice' Skill",
+        outcome: "The junior uses the skill in Codex App. Their first drafts are 90% on-brand. You spend 10 minutes on final 'taste' edits.",
+        isAgentic: true,
+      }
+    ]
+  },
   monday_morning: {
     title: "Monday Morning: 47 Tabs Open",
     description: "It is 8:00 AM in Vilnius. Your coffee is cooling. You have GA4, Search Console, Meta Ads, HubSpot, and 43 other tabs open. Two reports are due by 11:00 AM.",
